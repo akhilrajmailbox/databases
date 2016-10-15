@@ -1,0 +1,53 @@
+
+
+#basic queries
+
+to find sock::
+
+netstat -ln | grep -o -m 1 -E '\S*mysqld?\.sock'
+
+eg : bizruntime@biz:~$ netstat -ln | grep -o -m 1 -E '\S*mysqld?\.sock'
+/var/run/mysqld/mysqld.sock
+bizruntime@biz:~$ 
+
+
+
+
+https://www.digitalocean.com/community/tutorials/how-to-create-a-new-user-and-grant-permissions-in-mysql
+http://www.wikihow.com/Create-a-Database-in-MySQL
+
+
+
+making a new user within the MySQL shell:
+CREATE USER 'newuser'@'localhost' IDENTIFIED BY 'password';
+
+
+
+provide the user with access to the information they will need.
+GRANT ALL PRIVILEGES ON * . * TO 'newuser'@'localhost';
+
+
+
+reload all the privileges.
+FLUSH PRIVILEGES;
+
+
+DROP to delete a user altogether:
+DROP USER demo;
+
+
+drop database from mysql
+drop database demo;
+
+
+User query:
+select User,Host from mysql.user;
+
+
+dumping
+mysqldump -u root redmine_default > redmine_default.sql -p
+
+
+exporting to database from name.sql file
+mysql -h host -u user -p -D redmine_default < redmine_default.sql
+
