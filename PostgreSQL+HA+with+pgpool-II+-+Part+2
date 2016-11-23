@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+		
+
+
+
+
+
+	    
+
+
+	    
+
+	
+            <title>PostgreSQL HA with pgpool-II - Part 2 - Blog - Confluence</title>
+	
+        
+
+                        
+    
+                        
+    
+
+            <meta http-equiv="X-UA-Compatible" content="IE=EDGE,chrome=IE7">
+<meta charset="UTF-8">
+<meta id="confluence-context-path" name="confluence-context-path" content="/confluence">
+<meta id="confluence-base-url" name="confluence-base-url" content="https://www.itenlight.com/confluence">
+
+<meta id="atlassian-token" name="atlassian-token" content="dfc747d994dc65ec7c05b9218ebd86891a1f4f9d">
+
+
+<meta id="confluence-space-key" name="confluence-space-key" content="BLOG">
+<script type="text/javascript">
+        var contextPath = '/confluence';
+</script>
+
+    
+
+    <meta name="confluence-request-time" content="1479214806983">
+        
+    
+        
+            <meta name="ajs-is-space-admin" content=""> <meta name="ajs-has-space-config" content="">
+            <style>.ia-fixed-sidebar, .ia-splitter-left {width: 285px;}.theme-default .ia-splitter #main {margin-left: 285px;}.ia-fixed-sidebar {visibility: hidden;}</style>
+            <meta name="ajs-use-keyboard-shortcuts" content="true">
+            <meta name="ajs-discovered-plugin-features" content="$discoveredList">
+            <meta name="stp-license-product-name" content="Confluence"/> <meta name="stp-license-days-to-expiry" content="178"/> <meta name="stp-license-is-admin" content="false"/> <meta name="stp-license-should-keep-banner-hidden" content="true"/>
+            <meta name="ajs-keyboardshortcut-hash" content="e512dc1b82456f61e1e06fcb0a019072">
+            <meta id="team-calendars-has-jira-link" content="true">
+            <meta name="ajs-team-calendars-display-time-format" content="displayTimeFormat12">
+            <meta id="team-calendars-display-week-number" content="false">
+            <meta id="team-calendars-user-timezone" content="Europe/Belgrade">
+            <script type="text/x-template" id="team-calendars-messages" title="team-calendars-messages"><fieldset class="i18n hidden"><input type="hidden" name="calendar3.month.long.july" value="July"><input type="hidden" name="calendar3.day.short.wednesday" value="Wed"><input type="hidden" name="calendar3.day.short.thursday" value="Thu"><input type="hidden" name="calendar3.month.short.march" value="Mar"><input type="hidden" name="calendar3.month.long.april" value="April"><input type="hidden" name="calendar3.month.long.october" value="October"><input type="hidden" name="calendar3.month.long.august" value="August"><input type="hidden" name="calendar3.month.short.july" value="Jul"><input type="hidden" name="calendar3.month.short.may" value="May"><input type="hidden" name="calendar3.month.short.november" value="Nov"><input type="hidden" name="calendar3.day.long.friday" value="Friday"><input type="hidden" name="calendar3.day.long.sunday" value="Sunday"><input type="hidden" name="calendar3.day.long.saturday" value="Saturday"><input type="hidden" name="calendar3.month.short.april" value="Apr"><input type="hidden" name="calendar3.day.long.wednesday" value="Wednesday"><input type="hidden" name="calendar3.month.long.december" value="December"><input type="hidden" name="calendar3.month.short.october" value="Oct"><input type="hidden" name="calendar3.day.long.monday" value="Monday"><input type="hidden" name="calendar3.month.short.june" value="Jun"><input type="hidden" name="calendar3.day.short.monday" value="Mon"><input type="hidden" name="calendar3.day.short.tuesday" value="Tue"><input type="hidden" name="calendar3.day.short.saturday" value="Sat"><input type="hidden" name="calendar3.month.long.march" value="March"><input type="hidden" name="calendar3.month.long.june" value="June"><input type="hidden" name="calendar3.month.short.february" value="Feb"><input type="hidden" name="calendar3.month.short.august" value="Aug"><input type="hidden" name="calendar3.month.short.december" value="Dec"><input type="hidden" name="calendar3.day.short.sunday" value="Sun"><input type="hidden" name="calendar3.month.long.february" value="February"><input type="hidden" name="calendar3.day.long.tuesday" value="Tuesday"><input type="hidden" name="calendar3.month.long.may" value="May"><input type="hidden" name="calendar3.month.long.september" value="September"><input type="hidden" name="calendar3.month.long.november" value="November"><input type="hidden" name="calendar3.month.short.january" value="Jan"><input type="hidden" name="calendar3.month.short.september" value="Sep"><input type="hidden" name="calendar3.day.long.thursday" value="Thursday"><input type="hidden" name="calendar3.month.long.january" value="January"><input type="hidden" name="calendar3.day.short.friday" value="Fri"></fieldset></script>
+            <meta name="ajs-is-confluence-admin" content="false">
+            <meta name="ajs-connection-timeout" content="10000">
+            
+    
+    
+            <meta name="ajs-page-id" content="3735573">
+            <meta name="ajs-latest-page-id" content="3735573">
+            <meta name="ajs-content-type" content="blogpost">
+            <meta name="ajs-page-title" content="PostgreSQL HA with pgpool-II - Part 2">
+            <meta name="ajs-parent-page-id" content="">
+            <meta name="ajs-space-key" content="BLOG">
+            <meta name="ajs-space-name" content="Blog">
+            <meta name="ajs-jira-metadata-count" content="0">
+            <meta name="ajs-context-path" content="/confluence">
+            <meta name="ajs-base-url" content="https://www.itenlight.com/confluence">
+            <meta name="ajs-version-number" content="5.9.10">
+            <meta name="ajs-build-number" content="6218">
+            <meta name="ajs-remote-user" content="">
+            <meta name="ajs-remote-user-key" content="">
+            <meta name="ajs-remote-user-has-licensed-access" content="false">
+            <meta name="ajs-current-user-fullname" content="">
+            <meta name="ajs-current-user-avatar-url" content="">
+            <meta name="ajs-static-resource-url-prefix" content="/confluence/s/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/_">
+            <meta name="ajs-global-settings-attachment-max-size" content="104857600">
+            <meta name="ajs-user-locale" content="en_GB">
+            <meta name="ajs-enabled-dark-features" content="applinks.v3.ui,confluence.wrap.macro.disable,clc.quick.create,confluence.view.edit.transition,cql.search.screen,confluence-inline-comments-resolved,notification.plugin.api.enabled.com.atlassian.confluence.plugins.sharepage.api.ShareContentEvent,notification.plugin.api.enabled.com.atlassian.confluence.plugins.mentions.api.ConfluenceMentionEvent,nps.survey.inline.dialog,confluence.efi.onboarding.new.templates,notification.plugin.api.enabled.com.atlassian.confluence.event.events.security.ForgotPasswordEvent,pdf-preview,notification.plugin.api.enabled.com.atlassian.confluence.plugins.tasklist.event.SendTaskEmailEvent,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.page.async.PageMovedEvent,previews.sharing,previews.versions,notification.plugin.api.enabled.com.atlassian.confluence.plugins.files.notifications.event.FileContentUpdateEvent,file-annotations,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.attachment.AttachmentBatchUploadCompletedEvent,confluence.efi.onboarding.rich.space.content,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.comment.CommentCreateEvent,notification.plugin.api.enabled.com.atlassian.confluence.efi.emails.events.OnboardingLessUsersEvent,notification.plugin.api.enabled.com.atlassian.confluence.plugins.files.notifications.event.FileContentRemoveEvent,confluence.wrap.macro,atlassian.aui.raphael.disabled,previews.conversion-service,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.comment.CommentUpdateEvent,notification.plugin.api.enabled.com.atlassian.confluence.event.events.follow.FollowEvent,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.page.async.PageEditedEvent,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.blogpost.BlogPostCreateEvent,previews.trigger-all-file-types,notification.plugin.api.enabled.com.atlassian.confluence.plugins.inlinecomments.events.InlineCommentResolveEvent,notification.plugin.api.enabled.com.atlassian.confluence.event.events.like.LikeCreatedEvent,notification.plugin.api.enabled.com.atlassian.confluence.plugins.inlinecomments.events.InlineCommentCreateEvent,previews.sharing.pushstate,confluence-inline-comments-rich-editor,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.blogpost.BlogPostUpdateEvent,file-annotations.likes,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.page.async.PageCreatedEvent,notification.plugin.api.enabled.com.atlassian.confluence.plugins.files.notifications.event.FileContentMentionUpdateEvent,notification.plugin.api.enabled.com.atlassian.confluence.efi.emails.events.OnboardingNoSpaceCreatedEvent,notification.plugin.api.enabled.com.atlassian.confluence.plugins.hipchat.api.events.HipChatUserMapped,notification.plugin.api.enabled.com.atlassian.confluence.plugins.sharepage.api.ShareAttachmentEvent,confluence-inline-comments,quick-reload-inline-comments-flags,confluence-inline-comments-dangling-comment,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.blogpost.BlogPostMovedEvent">
+            <meta name="ajs-atl-token" content="dfc747d994dc65ec7c05b9218ebd86891a1f4f9d">
+            <meta name="ajs-confluence-flavour" content="VANILLA">
+            <meta name="ajs-user-date-pattern" content="dd MMM yyyy">
+            <meta name="ajs-date.format" content="MMM dd, yyyy">
+    
+    <link rel="shortcut icon" href="/confluence/s/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/_/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/confluence/s/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/_/favicon.ico">
+
+<link rel="search" type="application/opensearchdescription+xml" href="/confluence/opensearch/osd.action" title="Confluence"/>
+
+<script>
+window.WRM=window.WRM||{};window.WRM._unparsedData=window.WRM._unparsedData||{};
+WRM._unparsedData["com.atlassian.plugins.atlassian-plugins-webresource-plugin:context-path.context-path"]="\"/confluence\"";
+WRM._unparsedData["com.atlassian.plugins.atlassian-nps-plugin:atlassian-nps-plugin-resources.is-server-instance-data-provider"]="true";
+WRM._unparsedData["com.atlassian.plugins.browser.metrics.browser-metrics-plugin:browser-metrics.feature-data-provider-legacy"]="true";
+WRM._unparsedData["com.atlassian.plugins.atlassian-plugins-webresource-rest:web-resource-manager.resource-base-url-pattern"]="\"(?:/confluence(?:/s/.*?/_)?/download)\"";
+WRM._unparsedData["com.atlassian.confluence.plugins.confluence-license-banner:confluence-license-banner-resources.license-details"]="{\"daysBeforeLicenseExpiry\":0,\"daysBeforeMaintenanceExpiry\":0,\"showLicenseExpiryBanner\":false,\"showMaintenanceExpiryBanner\":false,\"renewUrl\":null,\"salesEmail\":null}";
+WRM._unparsedData["com.atlassian.confluence.plugins.confluence-hipchat-integration-plugin:discovery-javascript-data.link-active"]="{\"linkActive\":false,\"conditionsMet\":true,\"admin\":false}";
+WRM._unparsedData["com.atlassian.plugins.atlassian-nps-plugin:nps-acknowledgement-resources.analytics-enabled-data-provider"]="\"true\"";
+WRM._unparsedData["com.atlassian.plugins.atlassian-nps-plugin:nps-acknowledgement-resources.sen-data-provider"]="\"SEN-7331437\"";
+WRM._unparsedData["com.atlassian.confluence.plugins.confluence-feature-discovery-plugin:confluence-feature-discovery-plugin-resources.test-mode"]="false";
+WRM._unparsedData["com.atlassian.plugins.browser.metrics.browser-metrics-plugin:api.feature-data-provider"]="true";
+WRM._unparsedData["com.atlassian.plugins.browser.metrics.browser-metrics-plugin:api.rack-data-provider"]="\"\"";
+WRM._unparsedData["com.atlassian.applinks.applinks-plugin:applinks-common.applinks-context"]="{\"hostApplication\":{\"id\":\"88ebc2b4-1ec9-3912-8bef-6e77012a47e6\",\"type\":\"confluence\"}}";
+WRM._unparsedData["com.atlassian.applinks.applinks-plugin:applinks-common.applinks-features"]="{\"BITBUCKET_REBRAND\":false,\"V3_UI_OPT_IN\":false,\"V3_UI\":false}";
+WRM._unparsedData["com.atlassian.applinks.applinks-plugin:applinks-common.applinks-discovered-features"]="[]";
+WRM._unparsedData["com.atlassian.applinks.applinks-plugin:applinks-common.applinks-help-paths"]="{\"entries\":{\"applinks.docs.root\":\"https://confluence.atlassian.com/display/APPLINKS-050/\",\"applinks.docs.diagnostics.troubleshoot.sslunmatched\":\"SSL+and+application+link+troubleshooting+guide\",\"applinks.docs.diagnostics.troubleshoot.oauthtimestamprefused\":\"OAuth+troubleshooting+guide\",\"applinks.docs.delete.entity.link\":\"Create+links+between+projects\",\"applinks.docs.adding.application.link\":\"Link+Atlassian+applications+to+work+together\",\"applinks.docs.administration.guide\":\"Application+Links+Documentation\",\"applinks.docs.oauth.security\":\"OAuth+security+for+application+links\",\"applinks.docs.troubleshoot.application.links\":\"Troubleshoot+application+links\",\"applinks.docs.diagnostics.troubleshoot.unknownerror\":\"Network+and+connectivity+troubleshooting+guide\",\"applinks.docs.configuring.auth.trusted.apps\":\"Configuring+Trusted+Applications+authentication+for+an+application+link\",\"applinks.docs.diagnostics.troubleshoot.authlevelunsupported\":\"OAuth+troubleshooting+guide\",\"applinks.docs.diagnostics.troubleshoot.ssluntrusted\":\"SSL+and+application+link+troubleshooting+guide\",\"applinks.docs.diagnostics.troubleshoot.unknownhost\":\"Network+and+connectivity+troubleshooting+guide\",\"applinks.docs.delete.application.link\":\"Link+Atlassian+applications+to+work+together\",\"applinks.docs.link.applications\":\"Link+Atlassian+applications+to+work+together\",\"applinks.docs.diagnostics.troubleshoot.oauthproblem\":\"OAuth+troubleshooting+guide\",\"applinks.docs.relocate.application.link\":\"Link+Atlassian+applications+to+work+together\",\"applinks.docs.administering.entity.links\":\"Create+links+between+projects\",\"applinks.docs.upgrade.application.link\":\"OAuth+security+for+application+links\",\"applinks.docs.diagnostics.troubleshoot.connectionrefused\":\"Network+and+connectivity+troubleshooting+guide\",\"applinks.docs.configuring.auth.oauth\":\"OAuth+security+for+application+links\",\"applinks.docs.insufficient.remote.permission\":\"OAuth+security+for+application+links\",\"applinks.docs.configuring.application.link.auth\":\"OAuth+security+for+application+links\",\"applinks.docs.diagnostics\":\"Application+links+diagnostics\",\"applinks.docs.configured.authentication.types\":\"OAuth+security+for+application+links\",\"applinks.docs.adding.entity.link\":\"Create+links+between+projects\",\"applinks.docs.diagnostics.troubleshoot.unexpectedresponse\":\"Network+and+connectivity+troubleshooting+guide\",\"applinks.docs.configuring.auth.basic\":\"Configuring+Basic+HTTP+Authentication+for+an+Application+Link\",\"applinks.docs.diagnostics.troubleshoot.authlevelmismatch\":\"OAuth+troubleshooting+guide\"}}";
+</script>
+<link type="text/css" rel="stylesheet" href="/confluence/s/775249c1ad7a298a6b9a703040f09a72-CDN/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/80/_/download/superbatch/css/batch.css" media="all">
+<!--[if lt IE 9]>
+<link type="text/css" rel="stylesheet" href="/confluence/s/d41d8cd98f00b204e9800998ecf8427e-CDN/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/80/_/download/superbatch/css/batch.css?conditionalComment=lt+IE+9" media="all">
+<![endif]-->
+<!--[if lte IE 9]>
+<link type="text/css" rel="stylesheet" href="/confluence/s/d41d8cd98f00b204e9800998ecf8427e-CDN/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/80/_/download/superbatch/css/batch.css?conditionalComment=lte+IE+9" media="all">
+<![endif]-->
+<link type="text/css" rel="stylesheet" href="/confluence/s/e1043264f3e70660da8480ec5aad97c9-CDN/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/47df700daed3c4f64dac392db18d0411/_/download/contextbatch/css/blogpost,viewcontent,atl.general,main,atl.comments/batch.css?confluence.view.edit.transition=true&amp;highlightactions=true&amp;custom-site-logo=true" media="all">
+<link type="text/css" rel="stylesheet" href="/confluence/s/d41d8cd98f00b204e9800998ecf8427e-CDN/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/47df700daed3c4f64dac392db18d0411/_/download/contextbatch/css/blogpost,viewcontent,atl.general,main,atl.comments/batch.css?media=print" media="print">
+<!--[if lt IE 9]>
+<link type="text/css" rel="stylesheet" href="/confluence/s/d41d8cd98f00b204e9800998ecf8427e-CDN/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/47df700daed3c4f64dac392db18d0411/_/download/contextbatch/css/blogpost,viewcontent,atl.general,main,atl.comments/batch.css?conditionalComment=lt+IE+9" media="all">
+<![endif]-->
+<!--[if lte IE 9]>
+<link type="text/css" rel="stylesheet" href="/confluence/s/90731515e1d37d44a291c7a04cec4f94-CDN/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/47df700daed3c4f64dac392db18d0411/_/download/contextbatch/css/blogpost,viewcontent,atl.general,main,atl.comments/batch.css?conditionalComment=lte+IE+9" media="all">
+<![endif]-->
+<link type="text/css" rel="stylesheet" href="/confluence/s/d41d8cd98f00b204e9800998ecf8427e-CDN/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/5.0.9/_/download/batch/com.refinedwiki.confluence.plugins.theme.original:shared-batch/com.refinedwiki.confluence.plugins.theme.original:shared-batch.css" media="all">
+<link type="text/css" rel="stylesheet" href="/confluence/s/d41d8cd98f00b204e9800998ecf8427e-CDN/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/5.0.9/_/download/batch/com.refinedwiki.confluence.plugins.theme.original:core-resources/com.refinedwiki.confluence.plugins.theme.original:core-resources.css" media="all">
+<link type="text/css" rel="stylesheet" href="/confluence/s/d41d8cd98f00b204e9800998ecf8427e-CDN/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/5.0.9/_/download/batch/com.refinedwiki.confluence.plugins.theme.original:core-resources/com.refinedwiki.confluence.plugins.theme.original:core-resources.css?content-type=text%2Fcss&amp;media=print" media="print">
+<link type="text/css" rel="stylesheet" href="/confluence/s/d41d8cd98f00b204e9800998ecf8427e-CDN/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/5.0.9/_/download/batch/com.refinedwiki.confluence.plugins.theme.original:batch/com.refinedwiki.confluence.plugins.theme.original:batch.css" media="all">
+<link type="text/css" rel="stylesheet" href="/confluence/s/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/3/_/styles/colors.css?spaceKey=BLOG" media="all">
+<link type="text/css" rel="stylesheet" href="/confluence/s/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/5.0.9/_/download/resources/com.refinedwiki.confluence.plugins.theme.original:RefinedWikiTheme50/default-theme.css" media="all">
+<link type="text/css" rel="stylesheet" href="/confluence/s/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/3/_/styles/theme-colors.css?completeModuleKey=com.refinedwiki.confluence.plugins.theme.original%3ARefinedWikiTheme50&amp;stylesheetName=color-scheme.css&amp;spaceKey=BLOG" media="all">
+<script type="text/javascript" src="/confluence/s/b5041722346a7574e2fdeb61b0309428-CDN/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/80/_/download/superbatch/js/batch.js?atlassian.aui.raphael.disabled=true&amp;locale=en-GB" ></script>
+<script type="text/javascript" src="/confluence/s/fcca1b6fd9661f31dd050a7767db6cdb-CDN/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/47df700daed3c4f64dac392db18d0411/_/download/contextbatch/js/blogpost,viewcontent,atl.general,main,atl.comments/batch.js?confluence.view.edit.transition=true&amp;highlightactions=true&amp;build-number=6218&amp;nps-acknowledged=true&amp;analytics-enabled=true&amp;locale=en-GB&amp;anonymous-access-enabled=true&amp;is-server-instance=true&amp;nps-enabled=true&amp;hostenabled=true" ></script>
+<script type="text/javascript" src="/confluence/s/6c0981174e94142364564819dc0d1413-CDN/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/5.0.9/_/download/batch/com.refinedwiki.confluence.plugins.theme.original:shared-batch/com.refinedwiki.confluence.plugins.theme.original:shared-batch.js?locale=en-GB" ></script>
+<script type="text/javascript" src="/confluence/s/6c0981174e94142364564819dc0d1413-CDN/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/5.0.9/_/download/batch/com.refinedwiki.confluence.plugins.theme.original:core-resources/com.refinedwiki.confluence.plugins.theme.original:core-resources.js?locale=en-GB" ></script>
+<script type="text/javascript" src="/confluence/s/d41d8cd98f00b204e9800998ecf8427e-CDN/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/1.0/_/download/batch/confluence.web.resources:moment/confluence.web.resources:moment.js" ></script>
+
+    
+        
+            <meta name="stp-license-product-name" content="Confluence"/> <meta name="stp-license-days-to-expiry" content="178"/> <meta name="stp-license-is-admin" content="false"/> <meta name="stp-license-should-keep-banner-hidden" content="true"/>
+    
+
+        
+
+
+    
+
+		
+
+
+
+
+
+
+
+
+<script>
+	
+			if (typeof RW === 'undefined') {
+    	var RW = {};
+	}
+	
+		// Should not be used - but kept for third parties. Use RW.versionChecker instead.
+	RW.confluenceVersion = 5.91;
+    RW.versionChecker = {
+	  comparedTo510: -1,
+	  comparedTo59: 1,
+	  comparedTo58: 1,
+	  comparedTo57: 1
+	};
+
+		
+	
+		RW.isConfluenceAdministrator = false
+	
+				var contextPath = '/confluence';
+	
+					RW.scrollSearchActive = true;
+	
+            RW.blogPortalEnabled = true
+    
+		RW.userDashboardRedirection = true;
+	
+			
+		var originalTheme = RW;
+	
+		RW.cacheSettings = {};
+	RW.cacheSettings.params = {};
+	RW.cacheSettings.lastChange = {}
+
+	    
+    		RW.cacheSettings.params['footer'] = true;
+    	    		RW.cacheSettings.params['userdetails'] = true;
+    	    		RW.cacheSettings.params['globalmenu'] = true;
+    	    		RW.cacheSettings.params['usercategory'] = true;
+    	    		RW.cacheSettings.params['category'] = true;
+    	    		RW.cacheSettings.params['docache'] = false;
+    	            			RW.cacheSettings.lastChange['footer'] = 1478237216427;
+        			RW.cacheSettings.lastChange['userdetails'] = 1478237216427;
+        			RW.cacheSettings.lastChange['globalmenu'] = 1478237216427;
+        			RW.cacheSettings.lastChange['usercategory'] = 1478237216427;
+        			RW.cacheSettings.lastChange['category'] = 1478514243951;
+    	RW.activeCategoryKey = '';
+
+  // Keyboard shortcuts add-on status
+  RW.shortcutsEnabled = function() {
+	return Confluence && Confluence.KeyboardShortcuts && Confluence.KeyboardShortcuts.enabled;
+  }
+</script>
+
+
+
+	
+				
+	
+
+<!--[if !IE]><!-->
+ 	<style type="text/css">
+		.rw_toolbar_menu li .rw_toolbar_dropdown li a:hover
+		{
+			color: #ffffff;	
+			background: #3572b0;
+		}
+		
+		/* Scroll office fix */
+		#com-k15t-confluence-scroll-pdf-launcher:hover
+		{
+			color: #ffffff;	
+			background: #3572b0;
+		}
+	</style>
+<!--<![endif]-->
+
+		
+<!--[if IE 6]>
+	<link type="text/css" rel="stylesheet" href="/confluence/download/resources/com.refinedwiki.confluence.plugins.theme.original/styles/legacy/ie6-fix.css" media="all"/>
+<![endif]-->
+
+<!--[if IE 7]>
+	<link type="text/css" rel="stylesheet" href="/confluence/download/resources/com.refinedwiki.confluence.plugins.theme.original/styles/legacy/ie7-fix.css" media="all"/>
+<![endif]-->
+
+
+
+
+
+
+
+			
+		
+
+
+            
+            
+            
+
+
+            
+            
+            
+
+
+            
+            
+            
+
+
+            
+            
+            
+
+
+            
+            
+                                                                                                                                                                                                                                    
+            
+
+	<link type="text/css" rel="stylesheet" href="/confluence/plugins/servlet/rw-resources/themes/2/css/theme-2-1.css" media="all">
+
+
+			<style type="text/css">
+  #rw_wrapper.rw_effects_popup_shadow .rw_shadow_top { width: calc(100% + 40px); }
+  #rw_wrapper.rw_effects_popup_shadow .rw_shadow_top:after { width: calc(100% - 40px); }
+  #rw_wrapper.rw_effects_popup_border .rw_shadow_top { width: calc(100% + 2px); }
+</style>
+
+
+
+
+<style type="text/css">
+	/* Key navigation in popup */
+	li.rw_selected a { background: #fd9602 !important; border-color: #fd9602 !important; }
+	li.rw_selected * { color: #fff !important; }
+	li.rw_selected a span.rw_item_left { background: none !important; border-color:none !important;}
+	
+	/* Key navigation category menu */
+	#rw_category_menu ul li.rw_active.rw_selected a > span { border-color: #fd9602; }
+	
+	/* Key navigation for page tree */
+	.rw_pagetree_list li.rw_selected > div.rw_icon_content { background: #fd9602 !important; border-color: #fd9602 !important; }
+	.rw_pagetree_list li.rw_selected > div.rw_icon_content a { color:#fff !important;}
+	.rw_pagetree_list li.rw_selected a {background: none !important; border-color: none; color:#333 !important;}
+	
+	/* Key navigation for activity popup */
+	li.rw_selected div.rw_no_link { background: #fd9602 !important; border-color: #fd9602 !important; }
+	
+	/* Main Key Navigation */
+	.rw_keynavigation_row > div.rw_selected { background: #fd9602 !important; color:#fff !important;}
+	.rw_keynavigation_container > div.rw_keynavigation_empty_item { background: none;}
+	
+	/* Menu keynav exceptions */
+	#notifications-anchor.rw_selected {background: #fd9602 !important; color:#fff !important;}
+	
+	
+	
+
+	#rw_menu_bar #rw_create_button .aui-button,
+	#rw_inline_dialog_page_menu #rw_create_button .aui-button,
+    .rw_create_blogpost_button.aui-button
+	{
+	  background-image: -moz-linear-gradient(top, #3572b0, #2d6195);
+	  background-image: -ms-linear-gradient(top,  #3572b0, #2d6195);
+	  background-image: -webkit-linear-gradient(top,  #3572b0, #2d6195);
+	  background-image: -o-linear-gradient(top,  #3572b0, #2d6195);
+	  background-image: linear-gradient(top,  #3572b0, #2d6195);
+	  text-shadow: none;
+	  color: #ffffff;
+	}
+
+    #rw_menu_bar #rw_create_button .aui-button,
+    #rw_inline_dialog_page_menu #rw_create_button .aui-button,
+    .rw_create_blogpost_button.aui-button
+    {
+      border-color: #3572b0;
+    }
+    #rw_main #rw_create_button .aui-button:hover,
+    #rw_main #rw_create_button .aui-button:focus,
+    #rw_inline_dialog_page_menu #rw_create_button .aui-button:hover,
+    #rw_inline_dialog_page_menu #rw_create_button .aui-button:focus,
+    .rw_create_blogpost_button.aui-button:hover,
+    .rw_create_blogpost_button.aui-button:focus
+    {
+      background-image: -moz-linear-gradient(top, #3089e3, #31669b);
+      background-image: -ms-linear-gradient(top, #3089e3, #31669b);
+      background-image: -webkit-linear-gradient(top, #3089e3, #31669b);
+      background-image: -o-linear-gradient(top, #3089e3, #31669b);
+      background-image: linear-gradient(top, #3089e3, #31669b);
+    }
+
+    .rw_create_blogpost_button.aui-button {
+	  border: 0;
+    }
+    .rw_create_blogpost_button.aui-button:hover {
+      color: #ffffff;
+	}
+
+	
+				
+	
+	
+    	        #com-atlassian-confluence #inline-dialog-notifications-miniview
+        {
+            position:fixed;
+            top: 57px !important;
+            right: 80px !important;
+			margin: 0px !important;
+        }
+        #com-atlassian-confluence #inline-dialog-notifications-miniview:after,
+        #com-atlassian-confluence #inline-dialog-notifications-miniview:before
+        {
+            border: medium solid transparent;
+            bottom: 100%;
+            content: " ";
+            height: 0;
+            pointer-events: none;
+            position: absolute;
+            width: 0;
+        }
+        #com-atlassian-confluence #inline-dialog-notifications-miniview:after
+        {
+            
+            border-color: rgba(237, 237, 237, 0) rgba(237, 237, 237, 0) rgba(237, 237, 237, 0) #fff;
+            border-width: 8px;  
+            top:22px;
+            right: -15px;   
+        }
+        #com-atlassian-confluence #inline-dialog-notifications-miniview:before
+        {
+            border-color: rgba(221, 221, 221, 0) rgba(221, 221, 221, 0) rgba(221, 221, 221, 0) #ddd;
+            border-width: 10px;  
+            top: 20px;
+            right: -19px;
+        }
+        #com-atlassian-confluence #inline-dialog-notifications-miniview #arrow-notifications-miniview
+        {
+            display:none;
+        }
+	
+
+</style>
+
+
+
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-78446365-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<script type="text/javascript">//<![CDATA[
+	var buyBeerImages = Array();
+	buyBeerImages[0] = new Image(120, 120);
+	buyBeerImages[0].src = "/confluence/fdfiles/small.png";
+	buyBeerImages[1] = new Image(120, 120);
+	buyBeerImages[1].src = "/confluence/fdfiles/big.png";
+	buyBeerImages[2] = new Image(120, 120);
+	buyBeerImages[2].src = "/confluence/fdfiles/lot.png";
+
+	function switchBeerImage(e) {
+		var selectElement = AJS.$(e.target);
+		var imgIdx = parseInt(selectElement.find(":selected").attr('data-beer-index'));
+		var theForm = selectElement.closest("form");
+		theForm.find("input[type='image']").attr('src', buyBeerImages[imgIdx].src);
+	}
+//]]>
+</script>
+
+    
+                <link rel="canonical" href="https://www.itenlight.com/blog/2016/05/19/PostgreSQL+HA+with+pgpool-II+-+Part+2">
+        <link rel="shortlink" href="https://www.itenlight.com/confluence/x/FQA5">
+    <meta name="wikilink" content="[BLOG:/2016/05/19/PostgreSQL HA with pgpool-II - Part 2]">
+    <meta name="page-version" content="37">
+
+
+        
+
+    
+</head>
+
+<body      id="com-atlassian-confluence" class="RefinedWikiTheme50 rw_version_5 view-blog-post aui-layout aui-theme-default confluence_5   lighter-editor   rw_body_gray rw_category_dd_theme_dark rw_popup_design_default   ">
+
+
+        
+            <div id='stp-licenseStatus-banner'></div>
+    <ul id="assistive-skip-links" class="assistive">
+    <li><a href="#rw_page_title">Skip to content</a></li>
+    <li><a href="#rw_page_breadcrumbs">Skip to breadcrumbs</a></li>
+    <li><a href="#rw_category_menu">Skip to header menu</a></li>
+    <li><a href="#navigation">Skip to action menu</a></li>
+    <li><a href="#rw_search_query">Skip to quick search</a></li>
+</ul>
+
+
+<div id="page">
+<div id="full-height-container">
+   
+      <div id="header" style="display:none;"></div>
+   
+   <div id="header-precursor">
+        <div class="cell">
+            <div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.6";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+                        </div>
+    </div>
+	
+						
+		
+				
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+					<div 
+	id="rw_side_menu_hidden_by_apache" style="display:none;visibility:hidden;"
+
+	    	class=" rw_theme_dark"
+	
+	data-mode="open" 
+	>
+	<div id="rw_side_menu_handle" class="rw_handle"></div> 
+    <div id="rw_side_menu_container">
+		<ul>
+	                                				
+        
+        
+<li><a  id="login-link" href="/confluence/login.action?os_destination=%2Fdisplay%2FBLOG%2F2016%2F05%2F19%2FPostgreSQL%2BHA%2Bwith%2Bpgpool-II%2B-%2BPart%2B2" class="  user-item login-link "      title="" >
+        Log in
+</a></li>
+                        				
+        			
+				
+	    <li><a id="help-menu-link" href="#" title="Help" class="rw_has_dd rw_tooltip" data-dd="help-menu-link-dd" data-tooltip="Help">
+      <span class="rw_item_icon aui-iconfont-help"></span>
+    </a>
+      <nav id="help-menu-link-dd" class="rw_side_menu_dd" data-owner="help-menu-link">
+		              <div class="rw_section">
+              <ul  id="help-menu-link-leading" class="section-leading first">
+				                          
+    
+        
+<li><a  id="confluence-help-link" href="https://docs.atlassian.com/confluence/docs-59/Getting+Help+And+Support" class="   "      title="Visit the Confluence documentation home"  target="_blank"
+>
+        Online Help
+</a></li>
+                                            
+    
+        
+<li><a  id="keyboard-shortcuts-link" href="/confluence" class="   "      title="View available keyboard shortcuts" >
+        Keyboard Shortcuts
+</a></li>
+                                            
+    
+        
+<li><a  id="feed-builder-link" href="/confluence/dashboard/configurerssfeed.action" class="   "      title="Create your custom RSS feed." >
+        Feed Builder
+</a></li>
+                                            
+    
+        
+<li><a  id="whats-new-menu-link" href="https://confluence.atlassian.com/display/DOC/Confluence+5.9+Release+Notes" class="   "      title="" >
+        What’s new
+</a></li>
+                                            
+    
+        
+<li><a  id="gadget-directory-link" href="/confluence" class="  user-item administration-link "      title="Browse gadgets provided by Confluence" >
+        Available Gadgets
+</a></li>
+                                            
+    
+        
+<li><a  id="confluence-about-link" href="/confluence/aboutconfluencepage.action" class="   "      title="Get more information about Confluence" >
+        About Confluence
+</a></li>
+                                  </ul>
+            </div>
+		        </nav>
+    </li>
+	
+	    </ul>
+		<ul>
+			<li>	
+				<a id="rw_search_popup_button" title="Search">
+        			<span class="rw_item_icon rw_iconfont_search"></span>
+        		</a>
+			</li>
+		</ul>	
+	
+    </div>
+    <div class="rw_done_cover"></div> 
+</div>
+		
+				
+				
+
+
+
+        
+
+
+
+		<div id="rw_wrapper" class="rw_menu_layout_v2  rw_blog_space     rw_background_partial rw_effects_popup_shadow rw_header_theme_1row rw_header_height_space rw_category_menu_theme_traditional rw_content_menu_transparent rw_content_spaces_gray3 rw_content_menu_open ">
+
+			<div id="rw_main">
+
+								
+									    <div id="rw_theme_header" class=" rw_corners_rounded rw_text_size_regular rw_logo_size_medium">
+
+                
+                    <div class="rw_row_1 rw_header_row">
+
+                                                    <div class="rw_header_left rw_has_logo ">
+                        
+		                        	
+
+
+
+
+<div id="rw_logo_container" class="  ">
+		<a href="/">
+		<img src="/confluence/download/attachments/327682/atl.site.logo?version=2&amp;modificationDate=1465094613765&amp;api=v2" />
+	</a>
+
+		
+		</div>
+                    </div>
+                
+
+                                <div class="rw_header_center">	
+		
+		
+		<div id="rw_category_menu" 
+		class=" rw_version_3 rw_theme_traditional  rw_corners_rounded rw_text_size_regular  "
+		>
+
+					<div id="rw_category_menu_scroll_container">
+					<ul class="rw_category_items">
+				                           </ul>
+					</div><!-- # rw_category_menu_scroll_container -->
+			</div>		
+
+		<div id="rw_category_menu_parameters" style="display:none;"
+		 data-drop-down-content-size="medium"
+	  >
+	
+						<div id="rw_category_dd_disabled">false</div>
+		<div id="rw_category_dd_layout">dynamic_column</div>
+		<div id="rw_sub_category_collapsed">false</div>
+		<div id="rw_show_category_logo">false</div>
+		<div id="rw_exclude_archived_spaces">false</div>
+		<div id="rw_show_space_logo">false</div>
+		<div id="rw_show_space_icon">false</div>
+		<div id="rw_min_column_width">340</div>
+		<div id="rw_active_category_key"></div>
+		<div id="rw_is_dashboard"></div>
+		<div id="rw_manual_permissions">false</div>
+		<div id="rw_disable_category_dashboards">false</div>
+		<div id="rw_disable_subcategory_dashboards">false</div>
+		          <div id="rw_version">3</div>
+			  	<div id="rw_dashboard_title"></div>
+	</div>
+
+</div>
+
+                                <div class="rw_header_right ">
+                                           
+                    	<div id="rw_search_container">
+		<div id="rw_search" class="rw_search">
+			
+						<form style="width:0px; height:0px; overflow:hidden; "><input type="text" name="hack" onfocus="this.blur()" /></form>
+			    
+			<form id="rw_search_form" class="rw_search_form" method="get" action="/confluence/dosearchsite.action">
+		   		<label for="rw_search_query" class="assistive">Quick Search</label>
+				<input class="rw_search_query" id="rw_search_query" type="text" accessKey="search-pages-action.accesskey" autocomplete="off" name="queryString" size="25" />
+		    
+		   		<div style="clear:both;"></div>
+		        <div id="rw_search_result_container" class="rw_search_result_container rw_corners" style="display:none;">
+		        	
+		        </div>
+		
+		        <fieldset class="hidden parameters">
+		            <input type="hidden" id="quickNavEnabled" value="true" />
+		            		        </fieldset>
+		    </form>	
+	    </div>
+	</div>
+
+                                        	
+	
+	                </div>
+
+            </div>
+            </div>
+
+<div id="rw_theme_content" class="">
+<div style="clear:both;"></div>
+
+	
+			
+		
+			<div style="clear:both;"></div>
+
+
+									
+
+		    <div id="main" >
+
+													
+
+			
+
+
+				
+		
+
+<div id="rw_menu_bar_wrapper" class="" >
+		
+	
+	<div id="rw_menu_bar" class="rw_corners" >
+
+				          <div class="rw_create_button_container"><table><tr><td style="vertical-align:top;"><a href="https://twitter.com/share" class="twitter-share-button"></a><script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></td><td style="vertical-align:top;padding-left:10px;"><div class="fb-like" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div></td><td style="vertical-align:top;padding-left:10px;"><g:plusone size="medium"></g:plusone></td></tr></table></div><div class="rw_create_button_container_hidden_by_apache" style="display:none;visibility:hidden;"><a class="aui-button aui-button-primary rw_create_blogpost_button" href="/confluence/pages/createblogpost.action?spaceKey=BLOG"><span>Create blog post</span></a></div>
+		
+
+				
+										
+				
+
+								
+				
+			
+
+
+
+<div id="rw_space_nav" class="rw_corners">
+
+    <div class="rw_item_content ">
+                <a
+            title="Blog"
+                            href="/blog"
+                                >
+
+            Blog
+                                                                </a>
+    </div>
+
+    
+            <div id="rw_space_menu_button_hidden_by_apache" style="display:none;visibility:hidden;">
+            <span class="rw_icon rw_iconfont_top_menu"></span>
+        </div>
+                    
+			
+		
+        <div id="browse-space-menu" style="display:none;" >
+
+									<ul>
+			  	<h3 class="rw_section_title">Space Tools</h3>
+
+				
+									<li>
+						
+																									
+						<a title="Overview" href="/confluence/spaces/viewspacesummary.action?key=BLOG">
+															<span class="rw_item_icon rw_iconfont_text"></span>
+														<span class="rw_item_content">Overview</span>
+						</a>
+
+																	</li>
+									<li>
+						
+																									
+						<a title="Content Tools" href="/confluence/pages/reorderpages.action?key=BLOG">
+															<span class="rw_item_icon rw_iconfont_tree"></span>
+														<span class="rw_item_content">Content Tools</span>
+						</a>
+
+																	</li>
+							</ul>
+
+		</div>
+	            </div>
+
+		
+
+	</div> <!-- #rw_menu_bar -->
+</div> <!-- #rw_menu_bar_wrapper -->
+				
+
+												
+		
+		        
+
+								
+					
+											    <div class="rw_content_section blogpost view">
+    <div id="rw_main_column" class="rw_has_right_column">
+        <!--
+          #rw_page_right is @deprecated @since RWOT 3.1 the id of this tag will be
+          removed in future version of this theme. NOTE: The div-tag will remain
+          it's just the ID which will be removed.
+
+          id="rw_page_right"
+          id="blogpost_container"
+        -->
+        <div class="rw_content">
+
+            
+
+                           
+
+
+                <div class="rw_profile_pic">
+            <a  class="userLogoLink" data-username="peske" href="    /confluence/display/~peske
+">
+               <img class="userLogo logo" src="/confluence/download/attachments/327691/user-avatar?version=1&amp;modificationDate=1462000142995&amp;api=v2"
+               alt="User icon: peske" title="peske">
+           </a>        </div>
+        <div id="main-header" class="rw_has_profile_pic">
+
+                <div class="rw_page_buttons">
+    <a id="rw_open_fullscreen" title="Open page in fullscreen ( Type 'F', shift + f )" class="aui-button aui-button-subtle" href="#">
+        <span>
+			<span class="rw_icon rw_iconfont_fullscreen"></span>
+		</span>
+    </a>
+    <a id="rw_close_fullscreen" style="display:none;" class="aui-button aui-button-subtle" title="Exit fullscreen mode ( Type 'esc' )">
+        <span>
+            <span class="rw_icon rw_iconfont_minimize"></span>
+        </span>
+    </a>
+</div>
+
+                
+
+								
+
+                
+    <div id="navigation_hidden_by_apache" style="display:none;visibility:hidden;" class="content-navigation view">
+                    <ul class="ajs-menu-bar">
+                                            
+        <li class="normal ajs-menu-item">
+        <a id="action-menu-link" class="action aui-dropdown2-trigger-arrowless aui-button aui-button-subtle ajs-menu-title aui-dropdown2-trigger" href="#" aria-haspopup="true" aria-owns="action-menu" data-container="#navigation">
+            <span>
+                                    <span class="aui-icon aui-icon-small aui-iconfont-more"></span>
+                                
+            </span>
+        </a>         <div id="action-menu" class="aui-dropdown2 aui-style-default" aria-hidden="true">
+                            <div class="aui-dropdown2-section">
+                    <ul  id="action-menu-primary"                         class="section-primary first">
+                                                    <li>
+
+    
+        
+                                            
+    
+    
+    <a  id="view-attachments-link" href="/confluence/pages/viewpageattachments.action?pageId=3735573" rel="nofollow" class="action-view-attachments"  accessKey="t"  title="View Attachments">
+                <span>
+                        A<u>t</u>tachments (2)
+        </span>    </a>
+</li>
+                                                <li>
+
+    
+        
+                                            
+    
+    
+    <a  id="action-view-history-link" href="/confluence/pages/viewpreviousversions.action?pageId=3735573" rel="nofollow" class="action-view-history"   title="">
+                <span>
+                        Page History
+        </span>    </a>
+</li>
+                                        </ul>
+                </div>
+                            <div class="aui-dropdown2-section">
+                    <ul  id="action-menu-secondary"                         class="section-secondary">
+                                                    <li>
+
+    
+        
+                                            
+    
+    
+    <a  id="view-page-info-link" href="/confluence/pages/viewinfo.action?pageId=3735573" rel="nofollow" class="action-view-info"   title="">
+                <span>
+                        Page Information
+        </span>    </a>
+</li>
+                                                <li>
+
+    
+        
+                                            
+    
+    
+    <a  id="view-resolved-comments" href="/confluence" rel="nofollow" class=""   title="">
+                <span>
+                        Resolved comments
+        </span>    </a>
+</li>
+                                                <li>
+
+    
+        
+                                            
+    
+    
+    <a  id="link-to-page-link" href="/confluence/pages/viewinfo.action?pageId=3735573" rel="nofollow" class=""   title="Link to this Page">
+                <span>
+                        Link to this Page…
+        </span>    </a>
+</li>
+                                                <li>
+
+    
+        
+                                            
+    
+    
+    <a  id="action-view-source-link" href="/confluence/plugins/viewsource/viewpagesrc.action?pageId=3735573" rel="nofollow" class="action-view-source popup-link"   title="">
+                <span>
+                        View Source
+        </span>    </a>
+</li>
+                                                <li>
+
+    
+        
+                                            
+    
+    
+    <a  id="action-export-pdf-link" href="/confluence/spaces/flyingpdf/pdfpageexport.action?pageId=3735573" rel="nofollow" class=""   title="">
+                <span>
+                        Export to PDF
+        </span>    </a>
+</li>
+                                        </ul>
+                </div>
+                    </div>
+    </li>
+            </ul>
+    </div>
+
+        
+
+
+         <div id="title-heading" class="pagetitle with-breadcrumbs">
+
+                            <div id="breadcrumb-section_hidden_by_apache" style="display:none;visibility:hidden;">
+                    
+    
+    
+    <ol id="breadcrumbs">
+                                        
+                        
+        <li class="first" >
+                        
+                            <span class=""><a href="/confluence/pages/viewrecentblogposts.action?key=BLOG">Blog</a></span>
+                                                                    
+                        
+        <li>
+                        
+                            <span class="">2016</span>
+                                                                    
+                        
+        <li>
+                        
+                            <span class=""><a href="/blog/2016/05">May</a></span>
+                                                                    
+                        
+        <li>
+                        
+                            <span class="">19</span>
+                                                    </ol>
+
+
+                </div>
+            
+            
+		<a href="#page-banner-end" class="assistive">Skip to end of banner</a>
+<div id="page-banner-start" class="assistive"></div>
+
+			        
+            <div id="page-metadata-banner"><ul class="banner"><li id="system-content-items" class="noprint"><a href="" title="Unrestricted" id="content-metadata-page-restrictions-hidden" class="hidden"></a><a href="/confluence/pages/viewpageattachments.action?pageId=3735573&amp;metadataLink=true" title="2 attachments" id="content-metadata-attachments" class="aui-icon aui-icon-small aui-iconfont-attachment"></a></li><li class="page-metadata-item noprint has-button"  id="content-metadata-jira-wrapper"><a href="" title="" id="content-metadata-jira" class="aui-button aui-button-subtle content-metadata-jira tipsy-disabled hidden"><span>JIRA links</span></a></li></ul></div>
+    		
+
+<a href="#page-banner-start" class="assistive">Go to start of banner</a>
+<div id="page-banner-end" class="assistive"></div>
+	
+
+
+                            <h1 id="title-text" class="with-breadcrumbs">
+                                                        <a href="/blog/2016/05/19/PostgreSQL+HA+with+pgpool-II+-+Part+2">PostgreSQL HA with pgpool-II - Part 2</a>
+                                        </h1>
+                    </div>
+    </div><!-- \#main-header -->
+
+
+
+            
+            
+    
+    
+
+        
+
+
+
+
+            
+    <!-- this is blogpost.vmd -->
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+    
+    
+        
+    
+    
+                    
+    
+
+	                    
+    
+	
+
+
+
+	
+
+		
+
+		
+
+		
+
+	
+                	
+
+
+
+<div id="action-messages">
+                        </div>
+
+
+
+
+
+
+	
+		                    
+    
+    
+
+
+
+
+
+
+
+
+
+
+<div class="rw_blogpost_content">
+
+		
+						        	<div style="display:none;visibility:hidden;">
+				  <a href="#page-metadata-end" class="assistive">Skip to end of metadata</a>
+<div id="page-metadata-start" class="assistive"></div>
+
+    <div class="page-metadata">
+        <ul>
+            <li class="page-metadata-modification-info">
+                
+        
+    
+        
+    
+        
+            
+            Created by <span class='author'>     <a href="    /confluence/display/~peske
+"
+                       class="url fn confluence-userlink" data-username="peske"
+                            >Aleksandar Pesic</a></span>, last modified on <a class='last-modified' title='Show changes' href='/confluence/pages/diffpagesbyversion.action?pageId=3735573&amp;selectedPageVersions=36&amp;selectedPageVersions=37'>Jun 13, 2016</a>
+                </li>
+        </ul>
+    </div>
+
+
+<a href="#page-metadata-start" class="assistive">Go to start of metadata</a>
+<div id="page-metadata-end" class="assistive"></div>
+	  </div>
+	
+		  
+	
+	
+
+		
+
+	
+	<div style="clear:both;"></div>	
+	<div id="content" class="blogpost view">
+				<article>
+			<div id="main-content" class="wiki-content">
+							  	<style></style>
+			                                                    
+        <div class="wiki-content">
+            <!-- SEOManager:keywords=postgresql, pgpool, high-availability, replication
+composedTitle=PostgreSQL HA with pgpool-II - Part 2
+author=peske
+description=If you want to implement PostgreSQL high-availability cluster by using pgpool-II here&amp;apos;s complete, comprehensive tutorial for you.
+title=PostgreSQL HA with pgpool-II - Part 2
+:SEOManager --><div class="confluence-information-macro confluence-information-macro-tip"><p class="title">Support by sharing!</p><span class="aui-icon aui-icon-small aui-iconfont-approve confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>If you like the tutorial please share it with your friends. G+, Facebook and Twitter buttons are in the upper right corner of this page. <strong>Thanks!</strong></p></div></div><p>This is the second part of  the tutorial. Other parts are:</p><ul><li><a href="/blog/2016/05/18/PostgreSQL+HA+with+pgpool-II+-+Part+1">PostgreSQL HA with pgpool-II - Part 1</a></li><li><strong>PostgreSQL HA with pgpool-II - Part 2</strong></li><li><a href="/blog/2016/05/23/PostgreSQL+HA+with+pgpool-II+-+Part+3">PostgreSQL HA with pgpool-II - Part 3</a></li><li><a href="/blog/2016/05/21/PostgreSQL+HA+with+pgpool-II+-+Part+4">PostgreSQL HA with pgpool-II - Part 4</a></li><li><a href="/blog/2016/05/21/PostgreSQL+HA+with+pgpool-II+-+Part+5">PostgreSQL HA with pgpool-II - Part 5</a></li><li><a href="/blog/2016/05/25/PostgreSQL+HA+with+pgpool-II+-+Part+6">PostgreSQL HA with pgpool-II - Part 6</a></li></ul><p>If you haven't did so already, I strongly suggest you start from <a href="/blog/2016/05/18/PostgreSQL+HA+with+pgpool-II+-+Part+1">PostgreSQL HA with pgpool-II - Part 1</a> before continuing here. But it's your call...</p><p>In this part we'll go through installing PostgreSQL and configuring replication.</p><h2 id="PostgreSQLHAwithpgpool-II-Part2-2.1.Infrastructure">2.1. Infrastructure</h2><p>Just to remind you: we'll use two servers, in my case Ubuntu 14.04:</p><div class="table-wrap"><table class="confluenceTable"><tbody><tr><th class="confluenceTh">FQDN</th><th class="confluenceTh">IP</th><th class="confluenceTh">Purpose 1</th><th class="confluenceTh">Purpose 2</th></tr><tr><td class="confluenceTd">IT-RDBMS01.itenlight.com</td><td class="confluenceTd">10.1.10.150</td><td class="confluenceTd">Primary PostgreSQL instance</td><td class="confluenceTd">Active pgpool-II instance</td></tr><tr><td class="confluenceTd">IT-RDBMS02.itenlight.com</td><td class="confluenceTd">10.1.10.155</td><td class="confluenceTd">Standby PostgreSQL instance</td><td class="confluenceTd">Standby pgpool-II instance</td></tr></tbody></table></div><p>Virtual IP that will be used is 10.1.10.159.</p><p>Keep in mind that PostgreSQL team recommends that all the servers included in replication should be similar, &quot;at least from database's point of view&quot;.</p><h2 id="PostgreSQLHAwithpgpool-II-Part2-2.2.InstallingPostgreSQL">2.2. Installing PostgreSQL</h2><p>This installation should be done on both servers of course. Official Ubuntu PostgreSQL packages are stucked to PostgreSQL version 9.3, and we would like to go with a newer version (at least 9.4 since some significant improvements regarding replication are introduced there). For this reason the first thing to do is to add PostgreSQL apt store. It is well described at <a class="external-link" href="https://wiki.postgresql.org/wiki/Apt" rel="nofollow">PostgreSQL wiki</a>, but for your convenience I will repeat here:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">sh -c &#39;echo &quot;deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main&quot; &gt; /etc/apt/sources.list.d/pgdg.list&#39;</pre>
+</div></div><div class="confluence-information-macro confluence-information-macro-information"><p class="title">Note</p><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>I will assume that you're executing commands as root, so I will not use <code>sudo</code>. If this is not a case - prefix the commands with <code>sudo</code> where needed.</p></div></div><p>Install prerequisites, repository key, and PostgreSQL itself:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">apt-get install wget ca-certificates
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+apt-get update
+apt-get upgrade
+apt-get install postgresql-9.5 postgresql-9.5-pgpool2</pre>
+</div></div><p>Few notes:</p><ul><li>If you are using <code>sudo</code> you'll need to prefix all the lines form the previous snippet with <code>sudo</code>, except the second line where <code>sudo</code> is need by the second command and should be placed after pipe character (<code>|</code>)</li><li><code>postgresql-9.5-pgpool2</code> package is not needed for establishing replication, but it will be needed in the third part of this tutorial when we will install pgpool-II. Unfortunately for me, existence of this package is not mentioned in <a class="external-link" href="http://www.pgpool.net/docs/latest/pgpool-en.html" rel="nofollow">pgpool II manual</a>, so I've spent a lot of time trying to compile it from source. But lucky you will skip this pain. <img class="emoticon emoticon-smile" src="/confluence/s/en_GB/6218/d2c5c255bb54cd737858a680a1ead2532cae5842.22/_/images/icons/emoticons/smile.png" data-emoticon-name="smile" alt="(smile)" /></li></ul><p>Once the database is installed it is good practice to change postgres user's password:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: sql; gutter: false; theme: Confluence" data-theme="Confluence">sudo -u postgres psql
+ALTER USER postgres WITH PASSWORD &#39;newpassword&#39;;
+\q</pre>
+</div></div><div class="confluence-information-macro confluence-information-macro-information"><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>The previous code snippet shows how you can enter interactive PostgreSQL session (the first line), and how to exit it (the last line). The second line is actual SQL command that needs to be executed. In the rest of this tutorial I will not repeat entering/exiting step, but only the command that needs to be executed.</p></div></div><p>In the rest of the tutorial I will continue with a default <em>cluster</em> created during installation of PostgreSQL. If you want you can change/create new cluster by using <code><a class="external-link" href="http://www.postgresql.org/docs/9.3/static/app-initdb.html" rel="nofollow">initdb</a></code> command. Note that term <em>cluster</em> used here has different meaning than one we used so far, and we will in the rest of this tutorial. Here it refers to &quot;<em>collection of databases that are managed by a single server instance</em>&quot;. Unfortunate and confusing terminology introduced by PostgreSQL, but we have to adopt.</p><p>By default during package installation PostgreSQL creates the following directories on Ubuntu:</p><ul><li><code>/etc/postgresql/9.5/main</code> - configuration files like <code>postgresql.conf</code> are placed there, so let's name it <em>configuration directory</em>;</li><li><code>/var/lib/postgresql/9.5/main</code> - where the actual data is (and will be) stored, so we'll name it <em>data directory</em>;</li><li><code>/usr/lib/postgresql/9.5</code> - where PostgreSQL binaries are installed. It is not important for us, but let's name it <em>installation directory</em>.</li></ul><h2 id="PostgreSQLHAwithpgpool-II-Part2-2.3.ConfiguringReplication">2.3. Configuring Replication</h2><p>The main resource for me in this part was <a class="external-link" href="https://wiki.postgresql.org/wiki/Streaming_Replication" rel="nofollow">Streaming Replication article at PostgreSQL wiki</a>, but I've also peeked few times at <a class="external-link" href="http://pjkh.com/articles/postgresql-replication-and-load-balancing-with-pgpool2/" rel="nofollow">this article</a> and <a class="external-link" href="http://www.pgpool.net/pgpool-web/contrib_docs/simple_sr_setting2_3.0/" rel="nofollow">this pgpool.net article</a>. The latest one is pretty old, dealing with PostgreSQL 9.0 (way before new replication features), but it was useful for comparing things. Anyway, you won't need to peek anywhere else besides this very article you're enjoying in so much right now.</p><p>This procedure should also be done on both servers. Let's start with creating an user named <em>replication</em> with REPLICATION privileges:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: sql; gutter: false; theme: Confluence" data-theme="Confluence">CREATE ROLE replication WITH REPLICATION PASSWORD &#39;reppassword&#39; LOGIN;</pre>
+</div></div><p>Obviously replication will be performed by using previously created account. In some cases (i.e. <code>pg_basebackup</code> command used below) you won't be able to specify the password. For this reason you need to create <a class="external-link" href="http://www.postgresql.org/docs/current/static/libpq-pgpass.html" rel="nofollow">.pgpass</a> file and store the password there. Password file resides in user's home directory, but in case of postgres user it is not <code>/home/postgres</code> as you might expect. For security reasons his home directory is <code>/var/lib/postgresql</code> instead. So you need to create / modify <code>/var/lib/postgresql/.pgpass</code> file and ensure that it contains the following line:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">*:*:*:replication:reppassword</pre>
+</div></div><p>The first three asterisks denote &quot;any host, any port, any database&quot;. The last two are username and password, respectively. Basically we've just allowed postgres user to execute commands as replication user. Password file requires strict permissions, so we also need to execute:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">chown postgres:postgres /var/lib/postgresql/.pgpass
+chmod 0600 /var/lib/postgresql/.pgpass</pre>
+</div></div><p>The password file is needed on standby server, but it won't harm if you create it on both servers. Btw. we had to do all this password file thing only because PostgreSQL team want us to suffer; everything would be much easier if <code>pg_basebackup</code> could simply be called with specified password. But no. They decided to implement some pretty useless flags (i.e. <code>--password</code> and <code>--no-password</code>), but not an option to actually specify the password. Why? They would probably answer &quot;for security reasons&quot;, but the truth is that they simply want you suffer.</p><p>Next change the following entries in <code>postgresql.conf</code> file:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">listen_addresses = &#39;*&#39;
+port = 5433</pre>
+</div></div><p>Few notes again:</p><ul><li>PostgreSQL instance does not have to listen to all IP addresses. Precisely, it does not have to listen virtual IP address, but it has to listen on the main server's IP so that pgpool-II installed on the other server can access it, and it should listen on localhost address if pgpool-II instance installed on the same server accesses it this way. Anyway, there's no harm in setting PostgreSQL to listen all available addresses.</li><li>Note that I've changed default PostgreSQL port (5432) to 5433. The reason for me to do so is that I want to use 5432 for pgpool-II instance so that all outside world clients can connect to pgpool-II by using this well known port. Of course if you don't want to set ports in such way - you don't have to.</li></ul><p>Add/change the following entries in <code>pg_hba.conf</code> file:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">host  replication     replication     10.1.10.150/32          md5
+host  replication     replication     10.1.10.155/32          md5
+host  all             postgres        10.1.0.0/16             md5</pre>
+</div></div><p>Notes:</p><ul><li>The first two lines are allowing replication user to access the database from the IP address specified (you should change actual IP addresses appropriately). Basically not both <code>pg_hba.conf</code> files (on both servers) have to contain both lines. File on the primary server can contain only the second line, while the file on the standby server can contain only the first line, but again there's no harm in having the same file with both lines on both servers.</li><li>The third line is not needed for establishing replication, but I've added it so that I can access the server with postgres account from my local network, to be able to administer it remotely. You can skip this line if you want. Of course, if you'll keep this line then change IP network appropriately. </li></ul><h3 id="PostgreSQLHAwithpgpool-II-Part2-2.3.1.ConfiguringPrimaryServer">2.3.1. Configuring Primary Server</h3><h4 id="PostgreSQLHAwithpgpool-II-Part2-2.3.1.1.ReplicationSlots">2.3.1.1. Replication Slots</h4><p>This is the point where the tough part starts, and where we must give up on many resources, including the most important one - <a class="external-link" href="https://wiki.postgresql.org/wiki/Streaming_Replication" rel="nofollow">PostgreSQL wiki</a>. The reason for this is that we are choosing to take slightly different and better direction - we'll use so-called <em>replication slots</em>. This feature is introduced in PostgreSQL 9.4, and it is intended for logical replication (not to be explained here), but it also can be used with streaming replication we are planning to implement. You can read more about the technology <a class="external-link" href="http://michael.otacoo.com/postgresql-2/postgres-9-4-feature-highlight-replication-slots/" rel="nofollow">here</a> and <a class="external-link" href="http://blog.2ndquadrant.com/postgresql-9-4-slots/" rel="nofollow">here</a>, but you don't have to - I've already did, and I'll present here the essence. </p><p>First let introduce the new technology as short as possible. To do that I first need to shortly explain how &quot;log-shipping&quot; replication works: basically it transfers transaction log (WAL files) from primary to standby server, and standby uses these WAL files to reconstruct database state. In this type of replication standby is basically in constant recovery state (constantly recovering itself by reading new WAL files). Every once and while primary server frees its <code>pg_xlog</code> by deleting old WAL files. The problem with such replication arises when standby server gets too far behind the primary server (for example after long period being down). When standby tries to catch-up again - it can't get WAL files because they are deleted, meaning that replication would fail. Prior to replication slots the problem was solved by one of two means (or both combined as, for example in <a class="external-link" href="https://wiki.postgresql.org/wiki/Streaming_Replication" rel="nofollow">PostgreSQL wiki</a>):</p><ul><li>By defining minimal amount of WAL files kept (<code>wal_keep_segments</code> parameter in postgresql.conf). Basically we were able to set this parameter to be <em>high enough</em> so that primary server keeps WAL files <em>long enough</em> for standby to catch-up. </li><li>Instead of deleting WAL files - to archive and store them in a place where standby can access them (<code>archive_mode</code> and <code>archive_command</code> parameters in postgresql.conf).</li></ul><p>Replication slots are introducing new approach: they are basically allowing primary server to be aware of each standby and its replication state, and to keep WAL files as long as needed - no more, no less. With this technology primary server will retain WAL files basically forever waiting for standby to pick them up (unless itself goes down due to <code>pg_xlog</code> overflow). It means that we can simply turn on standby server weeks after it went down, and it will catch-up without any additional intervention on our side. On the other hand it also means that if we gave up on some standby for good, we have to <em>tell</em> that to primary server; otherwise it will go down suner or later. For this reason application slots are not created nor deleted automatically. We have to create the slot before connecting standby, and we also have to delete the slot after giving up on particular standby.</p><p>Replication slots are making our life easier when it comes to recovery after longer delays (no need for manual resynchronizing), but they are also taking away one interesting feature that were available with WAL archiving - so-called <em>moment in time recovery</em>. With WAL archiving we were able not only to restore new standby to current state of primary server, but also to restore it in a state of the database in any moment before (for example before you've accidentally deleted some table). With replication slots it is not possible; standby has to be restored in the current state of primary server.</p><p>In my case I'll go with replication slots, but still I will also provide instructions for those who decide to go with WAL archiving. </p><p>If you'll go with replication slots as I will, you need to create replication slot. To do that, on primary server execute the following command:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: sql; gutter: false; theme: Confluence" data-theme="Confluence">SELECT * FROM pg_create_physical_replication_slot(&#39;it_rdbms02&#39;);</pre>
+</div></div><p>I've named the slot <code>it_rdbms02</code> (obviously to correspond to hostname of my standby server), but you can name it as you want. Also on primary server you need to additionally change postgresql.conf as follows:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">wal_level = hot_standby
+max_replication_slots = 3
+max_wal_senders = 3</pre>
+</div></div><p>Notes:</p><ul><li>The first line tells the primary server that replicas will be working in <code>hot_standby</code> mode, meaning that it should send data without delay (streaming replication).</li><li>In the second line I've set maximal number of replication slots to 3 although I will use only one for now.</li><li>The third line defines maximal number of concurrent connections from standby servers.</li></ul><p>Finally start (or restart) PostgreSQL.</p><h4 id="PostgreSQLHAwithpgpool-II-Part2-2.3.1.2.WALArchiving">2.3.1.2. WAL Archiving</h4><p><span style="color: rgb(255,0,0);">This section is only for those who decided to go with WAL archiving!</span> You need to change postgresql.conf as described in <a class="external-link" href="https://wiki.postgresql.org/wiki/Streaming_Replication" rel="nofollow">PostgreSQL wiki</a>:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">wal_level = hot_standby
+max_wal_senders = 3
+wal_keep_segments = 32
+archive_mode    = on
+archive_command = &#39;cp %p /path_to/archive/%f&#39;</pre>
+</div></div><p>Start (or restart) PostgreSQL.</p><h3 id="PostgreSQLHAwithpgpool-II-Part2-2.3.2.ConfiguringStandbyServer">2.3.2. Configuring Standby Server</h3><p>The first and very important step is to <strong>stop PostgreSQL server</strong>.</p><p>Next thing to do is to delete everything from PostgreSQL data directory, including any any tablespace directories. <a class="external-link" href="https://wiki.postgresql.org/wiki/Streaming_Replication" rel="nofollow">PostgreSQL wiki</a> explains how you can do this, but instead I prefer shortcut way - to delete data directory itself. After that you will execute <code>pg_basebackup</code> command in order to get initial state from primary server. Everything mentioned will be accomplished by executing the following commands as postgres user:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">sudo -i -u postgres
+cd /var/lib/postgresql/9.5
+rm -rf main
+pg_basebackup -v -D main -R -P -h 10.1.10.150 -p 5433 -U replication
+logout</pre>
+</div></div><p>Explanation:</p><ul><li>The first command enters postgres user impersonation session;</li><li>The second navigates to data directory's parent folder;</li><li>The third deletes data directory;</li><li>The fourth initiates importing data from primary server to newly created data directory main;</li><li>The last exits postgres user impersonation session.</li></ul><p>Add / change the following line in <code>postgresql.conf</code> file:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">hot_standby = on
+hot_standby_feedback = on</pre>
+</div></div><p>Explanations:</p><ul><li>The first line tells standby server that it will be used for read-only queries (load balancing).</li><li>The third line prevents &quot;<em>pruning of tuples whose removal would cause replication conflicts</em>&quot; whatever it means. At the moment I'm not sure if it relates only to replication slots or can be used with WAL archives also, but I suggest setting it to 'on' in either case.</li></ul><h4 id="PostgreSQLHAwithpgpool-II-Part2-2.3.2.1.recovery.confinReplicationSocket">2.3.2.1. recovery.conf in Replication Socket</h4><p><span style="color: rgb(51,153,102);">This section is only for those who decided to go with replication socket technology.</span> You need to create / change <code>recovery.conf</code> file from <strong>data directory</strong> so that it contains the following:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">standby_mode = &#39;on&#39;
+primary_slot_name = &#39;it_rdbms02&#39;
+primary_conninfo = &#39;host=10.1.10.150 port=5433 user=replication password=reppassword&#39;
+trigger_file = &#39;/etc/postgresql/9.5/main/im_the_master&#39;</pre>
+</div></div><p>Explanations:</p><ul><li>The first line specifies that the server should be started as a standby;</li><li>The second line tells the server that replication sockets will be used, and the socket name it should use (must be the same as defined above while creating the socket);</li><li>The third line represents a connection string which is used by the standby server to connect with the primary (change IP address, port and password appropriately);</li><li>The fourth line specifies a trigger file (mentioned in the previous part) whose presence should cause streaming replication to end - meaning failover. You can define any path and name for a trigger file. I've selected configuration directory for location (since it is the first place an administrator usually checks), and descriptive name <code>im_the_master</code>. Since actual primary server (as defined above) does not contain <code>recovery.conf</code> file, it does not have to contain trigger file neither in order to be the primary server. But for consistency I suggest you to always have this file on the primary server - this way its role is obvious at the first glance. Of course, you should not allow more than one server from the same cluster to have this file.</li></ul><div class="confluence-information-macro confluence-information-macro-information"><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>Often mistake with recovery.conf is that it is placed in the wrong place - into configuration directory, together with <code>postgresql.conf</code>. Don't do that! Place it in <strong>data directory</strong> instead.</p></div></div><p>Start standby server.</p><h4 id="PostgreSQLHAwithpgpool-II-Part2-2.3.2.2.recovery.confinWALArchiving">2.3.2.2. recovery.conf in WAL Archiving</h4><p><span style="color: rgb(255,0,0);">This section is only for those who decided to go with WAL archiving!</span> <code>recovery.conf</code> file in this case is similar to one used in replication socket scenario, with few changes:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">standby_mode = &#39;on&#39;
+primary_conninfo = &#39;host=10.1.10.150 port=5433 user=replication password=reppassword&#39;
+trigger_file = &#39;/etc/postgresql/9.5/main/im_the_master&#39;
+restore_command = &#39;cp /path_to/archive/%f &quot;%p&quot;&#39;</pre>
+</div></div><p>Note that <code>restore_command</code> must point to the same location as <code>archive_command</code> defined in <code>postgresql.conf</code> on primary server above.</p><p>Start standby server.</p><h2 id="PostgreSQLHAwithpgpool-II-Part2-2.4.TestingReplication">2.4. Testing Replication</h2><p>Before actually test the replication you can first check postgresql service status. If the replication is running you should get the following output on Ubuntu (probably similar on other OS):</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence"># Primary server:
+service postgresql status
+9.5/main (port 5433): online
+ 
+# Standby server:
+service postgresql status
+9.5/main (port 5433): online,recovery</pre>
+</div></div><p>As already mentioned, in replication the standby server is always in recovery state.</p><p>The next test is obvious, and actually proves that the replication works. First we'll create temporary database <strong>on the primary</strong> server:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">sudo -u postgres psql
+postgres=# CREATE DATABASE replicationtest;
+CREATE DATABASE
+postgres=# \l</pre>
+</div></div><p>(The third line is not a command you should emit, but response gotten from executing the command from the second line.) The last command (<code>\l</code>) lists existing databases, so you'll get:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">                                     List of databases
+      Name       |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges
+-----------------+----------+----------+-------------+-------------+-----------------------
+ postgres        | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+ replicationtest | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+ template0       | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+                 |          |          |             |             | postgres=CTc/postgres
+ template1       | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+                 |          |          |             |             | postgres=CTc/postgres
+(4 rows)</pre>
+</div></div><p>You can close this list by pressing <code>q</code> key. Now you should get the same list of databases <strong>on the standby</strong> server, by executing:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">sudo -u postgres psql
+postgres=# \l</pre>
+</div></div><p>You can also try to delete the newly created database <strong>on the standby</strong> server by executing:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">postgres=# DROP DATABASE replicationtest;
+ERROR:  cannot execute DROP DATABASE in a read-only transaction</pre>
+</div></div><p>Obviously we cannot delete the database on the standby server, and this is OK. Let's try the same command on the primary server:</p><div class="code panel pdl" style="border-width: 1px;"><div class="codeContent panelContent pdl">
+<pre class="syntaxhighlighter-pre" data-syntaxhighlighter-params="brush: text; gutter: false; theme: Confluence" data-theme="Confluence">postgres=# DROP DATABASE replicationtest;
+DROP DATABASE</pre>
+</div></div><p>On the primary server deletion obviously succeeded. You can recheck database list on both servers to confirm that test database is absent.</p><div class="confluence-information-macro confluence-information-macro-information"><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>In the rest of this page we'll deal with some failover / recovery scenarios, but without pgpool-II (pretending that the replication itself was our final objective). It is useful for you to understand how failover / recovery works from the replications point of view, although in the next part of tutorial we'll introduce pgpool-II and deal with failover / recovery in a different way, through pgpool-II.</p></div></div><div class="confluence-information-macro confluence-information-macro-warning"><span class="aui-icon aui-icon-small aui-iconfont-error confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>The rest of this page covers only replication socket scenario. If you've used WAL archiving instead, things are probably similar, but you should recheck this with another resource.</p></div></div><h2 id="PostgreSQLHAwithpgpool-II-Part2-2.5.HowtoRecoverStandbyServer?">2.5. How to Recover Standby Server?</h2><p>Depending on what happened with the standby server after its failure there are two scenarios:</p><ol><li>If standby server is repaired without loosing its content, meaning that old data is still here, you can simply connect repaired standby server and turn it on. It will synchronize automatically after some time.</li><li>If the old standby server is lost, and a new, freshly installed one will take its place, the first thing you need to do at primary server is to <strong>delete replication socket which was used by the old standby server, and create a new socket for the new standby server</strong>. Then you need to configure new standby server in the same way you've configured the old one, by following the same exact steps described here.</li></ol><h2 id="PostgreSQLHAwithpgpool-II-Part2-2.6.HowtoRecoverPrimaryServer?">2.6. How to Recover Primary Server?</h2><p>Well, sad news is that you cannot do this. <strong>Primary server cannot be recovered.</strong></p><p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="250" src="/confluence/download/attachments/3735573/CONFUSED-MAN.jpg?version=1&amp;modificationDate=1463656905920&amp;api=v2" data-image-src="/confluence/download/attachments/3735573/CONFUSED-MAN.jpg?version=1&amp;modificationDate=1463656905920&amp;api=v2" data-unresolved-comment-count="0" data-linked-resource-id="3735584" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="CONFUSED-MAN.jpg" data-base-url="https://www.itenlight.com/confluence" data-linked-resource-content-type="image/jpeg" data-linked-resource-container-id="3735573" data-linked-resource-container-version="37"></span></p><p>I'm eager to see your face right now, while yellowing &quot;But what a hack we were doing so far then???&quot; You probably think that I'm fooling you, but no, it is true: primary server cannot be recovered. But it is also true that we wouldn't ever want to recover it anyway. The trick is that question: &quot;How to recover primary server?&quot; is wrong question. The right one would be: &quot;What to do when primary server fails?&quot;. So let's start again, this time using the right question:</p><h2 id="PostgreSQLHAwithpgpool-II-Part2-2.6.WhattoDowhenPrimaryServerFails?">2.6. What to Do when Primary Server Fails?</h2><p>The first thing to do when primary server fails (if it is not already done by some tool as pgpool-II is), is to promote standby server to primary role.</p><div class="confluence-information-macro confluence-information-macro-information"><span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span><div class="confluence-information-macro-body"><p>So there's the catch: instead of recovering primary server you actually <strong>promote survived standby server to primary server role</strong>, and later you'll actually <strong>recover a standby server</strong>.</p></div></div><p>You can easily make standby server take over primary role - simply by creating the trigger file. But you should be aware that there is more to do sooner or later, and I'll refer to these other steps that need to be done as <em>full promotion</em>.</p><h3 id="PostgreSQLHAwithpgpool-II-Part2-2.6.1.FailovervsFullPromotion">2.6.1. Failover vs Full Promotion</h3><p>When the failover is performed (by creating the trigger file), the failover server starts to behave as primary, but it is still not <em>full primary server</em>; it's more like TDY primary server. Let me explain. The new server will become writable, and the cluster will behave normally looking from the outside world. But the new server is not capable of accepting standby servers (existing or new ones). It means that all other standby servers (if any) won't be used in any way, as if they are failed together with the old primary server. In order to join them back (as well as any new standby server), we need to <em>fully promote</em> TDY primary server. Full promotion basically assumes: </p><ul><li>Delete <code>recovery.conf</code> file;</li><li>Change <code>prostgresql.conf</code> file appropriately for the new role (as described in this page) and restart PostgreSQL service;</li><li>Create replication slots for standby server(s) (as described in this page). </li></ul><p>Long story in short - full promotion must take place sooner or later, and we can choose when to perform it. As usual, there are some pros and cons:</p><ul><li>Failover itself does not require postgresql service restart, meaning that no additional downtime is introduced. On the other side, full promotion does require postgresql service restart which will cause minimal additional interrupt (probably no more than one second). In my case this up-to-one-second interrupt is acceptable, but someone else can decide that it is better to wait few hours and do this during low load period (night time for example). Nevertheless, don't forget that we've already had a few seconds downtime - period between old primary server failure and failover procedure. Even if it is done automatically by pgpool-II - it is not instantly (some time is needed for pgpool-II to <em>decide</em> that failover should take place).</li><li>On the other side failover without full promotion has huge disadvantage: as long as you are running without full promotion and at least one standby server - your system is in so-called <em>degraded state,</em> meaning that there's no more alternatives - if the failover server fails - you'll end up with data loss.</li></ul><p>To conclude: my decision is to perform full promotion immediately, and to join at least one standby as soon as possible.</p><p>There's another thing you should be aware of: even when the primary server is fully promoted, you should be cautious with joining standby servers, if you plan to join more than one. Don't forget that each standby server will actually be restored <strong>from scratch</strong> (all it's previous data will be deleted). It means that if you have a lot of data synchronization can take a while, and put some load on your network infrastructure. I'm not sure if this is handled internally by postgresql in some smart prioritizing way, but if not you can get performance degradation due to network overload. For this reason I suggest joining only one standby immediately, and all others later, during low load time, one by one, waiting for current to fully synchronize before starting the next one.</p><h3 id="PostgreSQLHAwithpgpool-II-Part2-2.6.2.ButIInsisttoKeeptheSameServerasPrimary!">2.6.2. But I Insist to Keep the Same Server as Primary!</h3><p>If for any reason you really want to have the same server as primary again after it is repaired (for example if it has slightly better hardware), you can achieve this. But first you need to create it as standby and give it some time to synchronize all the data. After that you can promote it again to primary server by intentionally killing TDY primary server. Then you'll have to repeat all the steps to join killed server as standby again.</p><h2 id="PostgreSQLHAwithpgpool-II-Part2-WheretoGoNext?">Where to Go Next?</h2><p>Well, it depends on your success so far. If your replication does not work, start again from the top of this page, or even from the start of this tutorial. But if your replication works as expected - you're lucky! Then the next step for us hard working people is <strong>BEER TIME!!!</strong></p><p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="250" src="/confluence/download/attachments/3735573/596323f6.jpg?version=1&amp;modificationDate=1463704441073&amp;api=v2" data-image-src="/confluence/download/attachments/3735573/596323f6.jpg?version=1&amp;modificationDate=1463704441073&amp;api=v2" data-unresolved-comment-count="0" data-linked-resource-id="3735596" data-linked-resource-version="1" data-linked-resource-type="attachment" data-linked-resource-default-alias="596323f6.jpg" data-base-url="https://www.itenlight.com/confluence" data-linked-resource-content-type="image/jpeg" data-linked-resource-container-id="3735573" data-linked-resource-container-version="37"></span></p><p>Tomorrow we'll continue with <a href="/blog/2016/05/23/PostgreSQL+HA+with+pgpool-II+-+Part+3">PostgreSQL HA with pgpool-II - Part 3</a> where we'll automate the procedure explained here.</p><p>
+
+<script type="text/javascript">//<![CDATA[
+
+	var fd_disqus_use=true;
+	var disqus_identifier='$paramThreadIdentifier';
+	var disqus_shortname='fatdragon';
+	var disqus_url='https://www.itenlight.com/blog/2016/05/19/PostgreSQL+HA+with+pgpool-II+-+Part+2';
+
+//]]>
+</script></p><p> </p>
+        </div>
+
+                
+    
+    
+    
+			</div>
+		</article>
+	</div>
+			
+	<div style="clear:both;"></div>
+	
+</div>
+
+
+<div id="rw_blogpost_nav">
+
+  			<div id="rw_blogpost_id" style="display:none;">3735573</div>
+	</div>
+
+	
+<div class="rw_blogpost_share">
+	
+		<div id="rw_share_navigation"></div>
+    
+		<a id="rw_blogpost_permalink" class="aui-button">
+		<span class="rw_link">
+			Link to this page
+		</span>
+	</a>
+
+        </div>
+
+
+<div style="clear:both;"></div>	
+
+
+
+			    
+    
+
+
+
+<div id="labels-section" class="pageSection group">
+    <div class="labels-section-content content-column" entityid="3735573" entitytype="blogpost">
+	<div class="labels-content">
+		
+    <ul class="label-list label-list-right ">
+                    
+        <li class="aui-label " data-label-id="3866625"><a class="aui-label-split-main" href="/confluence/label/BLOG/postgresql" rel="tag">postgresql</a></li><li class="aui-label " data-label-id="3866627"><a class="aui-label-split-main" href="/confluence/label/BLOG/db" rel="tag">db</a></li><li class="aui-label " data-label-id="3866628"><a class="aui-label-split-main" href="/confluence/label/BLOG/ha" rel="tag">ha</a></li><li class="aui-label " data-label-id="3866626"><a class="aui-label-split-main" href="/confluence/label/BLOG/pgpool2" rel="tag">pgpool2</a></li>
+            </ul>
+
+    </div>
+</div>
+</div>
+	   
+		    
+
+
+
+
+            
+        
+
+<div class="hidden parameters">
+    <input type="hidden" id="pageTitle" value="/2016/05/19/PostgreSQL HA with pgpool-II - Part 2">
+</div>
+
+
+
+
+
+
+
+                        
+    
+<div id="comments-section" class="pageSection group">
+        
+    
+
+
+
+</div>
+        
+
+
+
+
+
+
+	<!--
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/">
+         <rdf:Description
+    rdf:about="https://www.itenlight.com/blog/2016/05/19/PostgreSQL+HA+with+pgpool-II+-+Part+2"
+    dc:identifier="https://www.itenlight.com/blog/2016/05/19/PostgreSQL+HA+with+pgpool-II+-+Part+2"
+    dc:title="PostgreSQL HA with pgpool-II - Part 2"
+    trackback:ping="https://www.itenlight.com/confluence/rpc/trackback/3735573"/>
+</rdf:RDF>
+-->
+	
+
+		    
+
+	
+
+
+
+
+
+    
+	
+
+    
+    
+    
+	
+
+    
+
+
+
+
+
+
+
+    
+
+
+
+
+    
+    
+
+    
+    
+    
+
+    
+
+        
+
+
+
+        </div><!-- .rw_content -->
+    </div><!-- #rw_main_column -->
+
+        <div id="rw_right_column" class="rw_visibility_hidden">
+        <div>            
+  			<div id="rw_blogpost_calendar" class="rw_sidebar_section rw_corners">
+				<div> 										<div id="rw_blog_calendar_wrapper" >
+	<div id="rw_blog_calendar">
+	</div>
+	
+						<div id="rw_blogpost_id" style="display:none;">3735573</div>
+		<div id="rw_space_key" style="display:none;">BLOG</div>
+		</div>
+				</div>
+		</div>
+	
+        </div>
+    </div>
+    <div class="rw_clear"></div>
+</div><!-- #content -->
+										<script>
+						// Now we can show the sidebar..
+						$('#rw_left_column').removeClass('rw_visibility_hidden');
+						$('#rw_right_column').removeClass('rw_visibility_hidden');
+					</script>
+								
+		        <div style="clear:both;"></div>
+		    </div><!-- \#main -->
+	
+	
+		
+				</div>
+
+
+
+
+
+	<div
+		id="rw_footer_wrapper"
+		
+					        	class="rw_theme_dark"
+				>
+    	<div id="rw_footer_container">
+			
+									
+							<div id="rw_footer_content">
+				  	<p>Powered by <a href="http://www.atlassian.com/software/confluence" class="external-link" rel="nofollow">Atlassian Confluence</a> 5.9.10, themed by <a href="http://www.refinedwiki.com" class="external-link" rel="nofollow">RefinedTheme</a> 5.0.9</p>
+				</div>
+			    	</div>
+	</div>
+
+						
+
+
+                                
+            	
+	    
+
+						<div class="rw_bg_shadow">
+    <div class="rw_shadow_container">
+        <div class="rw_shadow_left"></div>
+        <div class="rw_shadow_top"></div>
+        <div class="rw_shadow_right"></div>
+    </div>
+</div>
+
+			</div> <!-- rw_main -->
+
+						
+
+                <div class="rw_background_section_general
+                                                                                "
+        ></div>
+    
+                <div class="rw_background_section_background1
+                                                    "
+        ></div>
+    
+
+<div id='rw_popup_bg' style='display:none;'></div>
+
+			
+		</div><!-- rw_wrapper -->
+		
+	
+		
+		
+	
+			
+	
+	<div id="fd_buy_me_a_beer" style="display:none;visibility:hidden;">
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+<input type="hidden" name="cmd" value="_s-xclick">
+<input type="hidden" name="hosted_button_id" value="RFGX5T23HR96G">
+<input type="hidden" name="on0" value="Size">
+<input type="hidden" name="currency_code" value="USD">
+<input type="hidden" name="image_url" value="https://www.itenlight.com/confluence/fdfiles/black190.png">
+<input type="hidden" name="no_shipping" value="1">
+<input type="hidden" name="return" value="https://www.itenlight.com/confluence/pages/viewpage.action?pageId=5079104">
+<input type="hidden" name="cancel_return" value="https://www.itenlight.com/confluence/pages/viewpage.action?pageId=5079106">
+<table style="border:none;" class="fd_remove_class">
+	<tr class="fd_remove_class">
+		<td rowspan="2" style="padding-right:10px;" valign="middle" class="fd_remove_class">
+			<strong>Want to PayPal me a beer?</strong>
+		</td>
+		<td style="width:1%;padding-right:6px;" valign="middle" class="fd_remove_class">
+			<select name="os0" onchange="switchBeerImage(event);">
+				<option value="Small" data-beer-index="0" selected>Small $2.00</option>
+				<option value="Big" data-beer-index="1">Big $5.00</option>
+				<option value="A lot!" data-beer-index="2">A lot! $10.00</option>
+			</select> 
+		</td>
+	</tr>
+	<tr class="fd_remove_class">
+		<td style="width:1%;" valign="middle" class="fd_remove_class">
+			<input type="image" src="/confluence/fdfiles/small.png" border="0" name="submit" alt="Pay with PayPal and let them to get a sip...">
+		</td>
+	</tr>
+</table>
+<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+</form>
+</div>
+<script type="text/javascript">//<![CDATA[
+
+    AJS.toInit(function(){
+
+	AJS.$(".fd_remove_class").removeClass();
+
+    	var byMeABeerDiv = AJS.$("#fd_buy_me_a_beer");
+    	var byMeABeerContainer = AJS.$("#rw_blogpost_calendar");
+
+    	if (byMeABeerDiv.length && byMeABeerContainer.length) {
+    		byMeABeerContainer.prepend(byMeABeerDiv);
+    		byMeABeerDiv.show();
+    		byMeABeerDiv.css("visibility", "visible");
+    	} 
+
+    });
+
+//]]>
+</script>
+
+<script type="text/javascript">//<![CDATA[
+
+AJS.toInit(function(){
+
+	if (typeof fd_disqus_use !== typeof undefined && fd_disqus_use == true && AJS.$('#comments-section')){
+
+		if (typeof disqus_identifier === typeof undefined || disqus_identifier == '' || disqus_identifier == '$paramThreadIdentifier')
+			disqus_identifier = 'itenlight_id_' + AJS.params.pageId;
+		var disqus_config = function () {
+			this.page.url=disqus_url;
+			this.page.identifier=disqus_identifier;
+		};
+		
+		// replace the comments section  
+		AJS.$('#comments-section').after('<div id="disqus_thread"></div>').remove();
+  
+		(function() { // DON'T EDIT BELOW THIS LINE
+			var d = document, s = d.createElement('script');
+
+			s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+			s.setAttribute('data-timestamp', +new Date());
+			(d.head || d.body).appendChild(s);
+		})();
+	}
+
+});
+
+//]]>
+</script>
+<script id="dsq-count-scr" src="//fatdragon.disqus.com/count.js" async></script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+
+
+
+</div><!-- \#full-height-container -->
+</div><!-- \#page -->
+</body>
+</html>
