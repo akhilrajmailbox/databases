@@ -1,0 +1,68 @@
+
+
+
+
+
+
+
+
+
+login
+cqlsh 192.168.1.253 9042
+
+
+check status
+sudo nodetool status
+
+
+check status of particular keyspace
+sudo nodetool status biz
+
+
+create keyspace with replication 
+CREATE KEYSPACE biz WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 2 };
+
+
+check on both server
+SELECT * FROM system_schema.keyspaces;
+
+
+to use that keyspace (database)
+use biz;
+
+
+create tables
+cqlsh> use biz;
+cqlsh:biz> create table emp (empid int primary key,
+... emp_first varchar, emp_last varchar, emp_dept varchar);
+cqlsh:biz>
+
+
+add another values to that table
+cqlsh:biz> insert into emp (empid, emp_first, emp_last, emp_dept)
+... values (1,'fred','smith','eng');
+cqlsh:biz>
+
+
+check from both server
+cqlsh:biz> select * from emp;
+
+ empid | emp_dept | emp_first | emp_last
+-------+----------+-----------+----------
+     1 |      eng |      fred |    smith
+
+(1 rows)
+
+
+
+partitioner: org.apache.cassandra.dht.RandomPartitioner
+
+
+to check the partioning
+
+ubuntu@biz:~$ nodetool getendpoints
+nodetool: getendpoints requires keyspace, table and partition key arguments
+See 'nodetool help' or 'nodetool help <command>'.
+
+
+
