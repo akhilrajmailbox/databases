@@ -6,7 +6,7 @@ MYSQL_CREDS=Backup_Creds
 MYSQL_BACKUP_LOC=/opt/SaaS_Backup/MySQL_Backup
 MYSQL_BACKUP_COUNT=5
 BACKUP_DATE=`date +%F--%H-%M`
-MYSQL_BACKUP=Snapshot-${BACKUP_DATE}
+MYSQL_BACKUP=MySQL-Snapshot-${BACKUP_DATE}
 
 
 Mysql_dbs=(
