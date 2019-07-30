@@ -1,12 +1,20 @@
 #!/bin/bash
 
 CASS_SNAP_FILE=$1
-EXTRACT_SNAP="Snapshot-$$"
+EXTRACT_SNAP="Cassandra-Backup-$$"
 
 if [ -z "${CASS_SNAP_FILE}" ]; then
     echo "Usage import.sh [path to tar file]"
     exit 1
 fi
+
+
+until [[ ! -z "$CASS_HOST" ]] ; do
+    echo "Cassandra listen Address must match [ listen_address ] and [ broadcast_rpc_address ] of cassandra.yml file"
+    echo ""
+    read -p "Enter the Cassandra listen Address :: " CASS_HOST </dev/tty
+done
+
 
 
 ############################
@@ -28,10 +36,10 @@ function Detect_keyspace() {
         cqlsh -e "drop keyspace \"${mykeyspace}\";"
 
         echo "Create empty keyspace: ${mykeyspace}"
-        cat "${EXTRACT_SNAP}/SCHEMA/${mykeyspace}.sql" | cqlsh
+        cat "${EXTRACT_SNAP}/SCHEMA/${mykeyspace}.cql" | cqlsh
 
         for data_dir in "${EXTRACT_SNAP}/${mykeyspace}/"*; do
-            sstableloader -d localhost "${data_dir}"
+            sstableloader -d ${CASS_HOST} "${data_dir}"
         done
     done
 }
