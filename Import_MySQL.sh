@@ -1,18 +1,12 @@
 #!/bin/bash
-MYSQL_USER=
 MYSQL_HOST=localhost
 MYSQL_BACKUP_FILE=$1
-EXTRACT_BACKUP="Backup-$$"
+EXTRACT_BACKUP="MySQL-Backup-$$"
 BACKUP_DATE=`date +%F--%H-%M`
 MYSQL_BACKUP=DB_BaK-$BACKUP_DATE
 
 if [[ -z "${MYSQL_BACKUP_FILE}" ]] ; then
     echo "Usage import.sh [path to tar file]"
-    exit 1
-fi
-
-if [[ -z "${MYSQL_USER}" ]] ; then
-    echo "update the MYSQL_USER variable inside the script....!"
     exit 1
 fi
 
@@ -33,14 +27,32 @@ function Detect_dbs() {
 
         mkdir ${MYSQL_BACKUP}
         echo "Take BackUp of Database ${mydb}.....Give me Permission to take dump of existing Database, delete and import...!!!!"
-        until [[ ! -z "$MYSQL_PASS" ]] ; do
-            read -s -p "Enter MySQL Password :: " MYSQL_PASS </dev/tty
+
+        until [[ ! -z "$MYSQL_USER" ]] ; do
+            read -s -p "Enter MySQL user name :: " MYSQL_USER </dev/tty
         done
-        mysqldump -h ${MYSQL_HOST} -u ${MYSQL_USER} -p${MYSQL_PASS} ${mydb} > ${MYSQL_BACKUP}/${mydbdump}
+
+        until [[ ! -z "$MYSQL_PASS" ]] ; do
+            read -s -p "Enter MySQL Password for user $MYSQL_USER :: " MYSQL_PASS </dev/tty
+        done
+
+        mysql -u ${MYSQL_USER} -p${MYSQL_PASS} -e "show databases;" > /dev/null
         if [[ $? -ne 0 ]] ; then
-            echo "Task -- Take BackUp of Database ${mydb} -- failed"
+            echo "Task -- Mysql Conenction for localhost -- failed"
             exit 1
         fi
+
+        DB_CHECK_RESULT=`mysqlshow -u ${MYSQL_USER} -p${MYSQL_PASS} ${mydb} | grep -v Wildcard | grep -o ${mydb}`
+        if [ "$RESULT" == ${mydb} ]; then
+            mysqldump -h ${MYSQL_HOST} -u ${MYSQL_USER} -p${MYSQL_PASS} ${mydb} > ${MYSQL_BACKUP}/${mydbdump}
+            if [[ $? -ne 0 ]] ; then
+                echo "Task -- Take BackUp of Database ${mydb} -- failed"
+                exit 1
+            fi
+        else
+            echo "Database ${mydb} not available.....!"
+        fi
+
         echo "Deleting Database ${mydb}"
         mysql -h ${MYSQL_HOST} -u ${MYSQL_USER} -p${MYSQL_PASS} -e "DROP DATABASE ${mydb} ; CREATE DATABASE ${mydb} ;"
         if [[ $? -ne 0 ]] ; then
