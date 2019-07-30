@@ -4,7 +4,7 @@ CASS_DATA_DIR=/var/lib/cassandra/data
 CASS_BACKUP_LOC=/opt/SaaS_Backup/Cass_Snapshots
 CASS_BACKUP_COUNT=2
 SNAP_DATE=`date +%F--%H-%M`
-CASS_SNAP=Snapshot-${SNAP_DATE}
+CASS_SNAP=Cassandra-Snapshot-${SNAP_DATE}
 
 
 keyspace=(
